@@ -192,11 +192,6 @@ end
 % Il vettore Cp è calcolato con l'ordine orario dei punti di controllo, 
 % a partire dal punto di controllo del pannello 1
 
-%% johnny
-
-c == 0;
-
-
 
 
 
