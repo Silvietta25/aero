@@ -65,13 +65,14 @@ for i=1:N_pann
     lungh_vect(i,1)=norm(pan_vect(i,:));
 end
 %% Rappresento i centri dei pannelli
+figure
 plot(naca0012nodes(:,1),naca0012nodes(:,2),'Linewidth',2)
 axis equal
 grid on
 hold on
-plot(naca0012nodes(:,1),naca0012nodes(:,2),'.','MarkerSize',7,'Color','r')
+plot(naca0012nodes(:,1),naca0012nodes(:,2),'.','MarkerSize',10,'Color','r')
 hold on
-plot(centre_vect(:,1),centre_vect(:,2),'.','MarkerSize',7,'Color','g')
+plot(centre_vect(:,1),centre_vect(:,2),'.','MarkerSize',10,'Color','g')
 
 %% Matrice di rotazione da sist di rif locale a globale: U=R*u.
 Loc_to_Glob_matrix=zeros(2*N_pann,2);
