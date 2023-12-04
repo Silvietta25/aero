@@ -1,4 +1,4 @@
-function [x,y] = createProfile(Profilo,NPannelli,Chord)
+function [x,y] = createProfile(Profilo,NPannelli,Chord,Flap)
 %UNTITLED4 Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -13,6 +13,14 @@ function [x,y] = createProfile(Profilo,NPannelli,Chord)
         fprintf(fileID,'pane\n\n');
 
         fprintf(fileID,'gdes\n');
+
+        if nargin==4
+           fprintf(fileID,'flap 0.75 0 10\n');
+           % nell'ordine sono: coord_x (è sensato sceglierla a 3/4 
+           % della corda) e coord_y cerniera flap, angolo di
+           % deflessione flap verso il basso in gradi
+        end
+
         fprintf(fileID,'tgap 0 0 \n');
         
         fprintf(fileID,'exec \n\n\n');
