@@ -19,10 +19,10 @@ TestCase = 0;
 NCorpi = 2;  % Numero di corpi da analizzare
 CodiceProfilo = cell(NCorpi, 1);
 CodiceProfilo{1} = '0012';
-CodiceProfilo{2} = '0012';
+CodiceProfilo{2} = '0014';
 Chord = [1 1];
-N_pann1 = 101;
-N_pann2 = 101;
+N_pann1 = 80;
+N_pann2 = 150;
 
 %% Creazione profilo 1
 i=1;
@@ -343,16 +343,13 @@ for i=1:N_pann2
     Cp2(i,1)=1-norm(U_ri2(i,:))^2/norm(U_inf)^2;
 end
 
-%% Calcolo Cl sui 2 profili
+%% Calcolo Cl sui 2 profili: adimensionalizzo con la corda maggiore tra le due
 Cl1=0;
+Chord=max(Chord);
 for i=1:N_pann1
-    Chord1=Chord(1);
-    Cl1=Cl1-dot(((1/Chord1)*Cp1(i,1)*lungh_vect1(i).*normal_versor1(i,:)),[0;1]);
+    Cl1=Cl1-dot(((1/Chord)*Cp1(i,1)*lungh_vect1(i).*normal_versor1(i,:)),[0;1]);
 end
 Cl2=0;
 for i=1:N_pann2
-    Chord2=Chord(2);
-    Cl2=Cl2-dot(((1/Chord2)*Cp2(i,1)*lungh_vect2(i).*normal_versor2(i,:)),[0;1]);
+    Cl2=Cl2-dot(((1/Chord)*Cp2(i,1)*lungh_vect2(i).*normal_versor2(i,:)),[0;1]);
 end
-
-
