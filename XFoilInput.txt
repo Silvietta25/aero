@@ -1,4 +1,4 @@
-naca  0014
+naca  0012
 
 pane
 
@@ -8,10 +8,10 @@ exec
 
 
 ppar
-n  151
+n  102
 
 
-save  NACA_0014.dat
+save  NACA_0012.dat
 
 y
 

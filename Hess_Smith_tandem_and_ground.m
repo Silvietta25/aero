@@ -563,7 +563,4 @@ for i=1:N_pann2
     Cl2=Cl2-dot(((1/Chord)*Cp2(i,1)*lungh_vect2(i).*normal_versor2(i,:)),[0;1]);
 end
 
-%%
-
-cccc == 0
 
