@@ -3,25 +3,25 @@ close all
 addpath mat_functions
 
 %% Distanza tra i profili in tandem
-x12 = 1.5;  % distance between forward airfoil LE and back airfoil LE
-y12 = 0;
-h=0.4; % distance from ground
+x12 = 1.05;  % distance between forward airfoil LE and back airfoil LE
+y12 = -0.2;
+h=0.8; % distance from ground
 
 %% Input
 U = 1;
-alpha1 = -5*pi/180; % è opposta all'inclinazione del profilo 1 rispetto ad asse X
-alpha2 =-8*pi/180; % è opposta all'inclinazione del profilo 2 rispetto ad asse X
+alpha1 = -10*pi/180; % è opposta all'inclinazione del profilo 1 rispetto ad asse X
+alpha2 =-25*pi/180; % è opposta all'inclinazione del profilo 2 rispetto ad asse X
 
 U_inf(1)=U; 
 U_inf(2)=0;
 
 %% Dati profili
 TestCase = 0;
-NCorpi = 2;  % Numero di corpi da analizzare
+NCorpi = 1;  % Numero di corpi da analizzare
 CodiceProfilo = cell(NCorpi, 1);
-CodiceProfilo{1} = '0012';
-CodiceProfilo{2} = '0014';
-Chord = [1 1];
+CodiceProfilo{1} = '23012';
+CodiceProfilo{2} = '23012';
+Chord = [1 0.25];
 N_pann1 = 80;
 N_pann2 = 150;
 
