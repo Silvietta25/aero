@@ -18,7 +18,7 @@ h=0.5; % distanza tra profilo e suolo (semidistanza verticale tra i 2
 % profili da utilizzare con metodo delle immagini
 
 U_inf = 1;  % Velocità all'infinito [m/s]
-alpha = -2;   % opposto dell'inclinazione profilo rispetto alla corr uniforme (incidenza)
+alpha = -10;   % opposto dell'inclinazione profilo rispetto alla corr uniforme (incidenza)
 
 % La corrente uniforme deve rimanere orizzontale, perchè sennò non potrei
 % creare correttamente lo specchio (non riuscirei a creare una parete
@@ -40,7 +40,7 @@ Chord = [1];
 NPannelli = [101];
 
 i=1;
-[x,y]=createProfile(CodiceProfilo{i},NPannelli(i),Chord(i));
+[x,y]=createProfile(CodiceProfilo{i},NPannelli(i),Chord(i), 1);
 
 x=x.*cosd(alpha)-y.*sind(alpha);
 y=x.*sind(alpha)+y.*cosd(alpha);

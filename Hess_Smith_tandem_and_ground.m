@@ -5,7 +5,7 @@ addpath mat_functions
 %% Distanza tra i profili in tandem
 x12 = 1.05;  % distance between forward airfoil LE and back airfoil LE
 y12 = -0.2;
-h=0.8; % distance from ground
+h=0.5; % distance from ground
 
 %% Input
 U = 1;
@@ -22,7 +22,7 @@ CodiceProfilo = cell(NCorpi, 1);
 CodiceProfilo{1} = '23012';
 CodiceProfilo{2} = '23012';
 Chord = [1 0.25];
-N_pann1 = 80;
+N_pann1 = 300;
 N_pann2 = 150;
 
 %% Creazione profilo 1
