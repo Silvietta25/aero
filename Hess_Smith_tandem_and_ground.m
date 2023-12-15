@@ -1,6 +1,6 @@
 clear all
 close all
-%addpath mat_functions
+addpath mat_functions
 
 %% Distanza tra i profili in tandem
 x12 = 1.05;  % distance between forward airfoil LE and back airfoil LE
@@ -74,21 +74,22 @@ x_center1 = 0.5*(x_nodes1(1:N_pann1) + x_nodes1(2:N_pann1+1));
 y_center1 = 0.5*(y_nodes1(1:N_pann1) + y_nodes1(2:N_pann1+1));
 centre_vect1=[x_center1 y_center1];
 % Control points profile 2
-x_center2 = zeros(N_pann2, length(alpha2vect));
-y_center2 = zeros(N_pann2, length(alpha2vect));
+x_center2 = zeros(N_pann2+1, length(alpha2vect));
+y_center2 = zeros(N_pann2+1, length(alpha2vect));
 
-for p = 1: N_pann2
-     if p <= N_pann2
+for p = 1: N_pann2+1
+    if p <= N_pann2
 x_center2(p, :)  = 0.5*(x_nodes2(p,l) + x_nodes2(p+1, l)); 
 y_center2(p, :)  = 0.5*(y_nodes2(p, l) + y_nodes2(p+1, l));
-     else 
- x_center2(N_pann1+1, :)  = 0.5*(x_nodes2(N_pann2,l) + x_nodes2(1, l)); 
- y_center2(N_pann1+1, :)  = 0.5*(y_nodes2(N_pann2, l) + y_nodes2(1, l));      
-     end 
+    else 
+x_center2(N_pann1+1, :)  = 0.5*(x_nodes2(p,l) + x_nodes2(p+1, l)); 
+y_center2(N_pann1+1, :)  = 0.5*(y_nodes2(p, l) + y_nodes2(p+1, l));      
+    end 
 end
+x_center2;
+y_center2;
 
-center_vect2 = [x_center2; y_center2];
-
+%centre_vect2(,l)=[x_center2(:, l)  y_center2(:, l)];
 % Profile 1 vectors
 pan_vect1=zeros(N_pann1,2);
 tangent_versor1=zeros(N_pann1,2);
