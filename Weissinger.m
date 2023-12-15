@@ -148,7 +148,7 @@ for i = 1:N_corpi
         end
 
         for k = 1:length(discretizzazione_direzione_ala)
-            mesh{j,k} = (punti_TE(k) - punti_LE(k)).* discretizzazione_direzione_corda(j) + punti_LE(k);
+            mesh{j,k + length(discretizzazione_direzione_ala) - 1} = (punti_TE(:,k) - punti_LE(:,k)).* discretizzazione_direzione_corda(j) + punti_LE(:,k);
         end
     end
 
@@ -170,6 +170,10 @@ for i = 1:N_corpi
                     punti_di_induzione{j,k} = -(punti_di_induzione{j,2*length(discretizzazione_direzione_ala)-1-k} - [spost_X spost_Y spost_Z]') + [spost_X spost_Y spost_Z]';
                 end
             end
+        end
+
+        for k = 1:length(discretizzazione_direzione_ala) - 1
+            mesh{j,k} = -(mesh{j,2*length(discretizzazione_direzione_ala)-k} - [spost_X spost_Y spost_Z]') + [spost_X spost_Y spost_Z]';
         end
     end
 end
