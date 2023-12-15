@@ -5,19 +5,11 @@ addpath mat_functions
 %% Distanza tra i profili in tandem
 x12 = 1.05;  % distance between forward airfoil LE and back airfoil LE
 y12 = -0.2;
-h=0.5; % distance from ground
-
-%% Input
-U = 1;
-alpha1 = -10*pi/180; % è opposta all'inclinazione del profilo 1 rispetto ad asse X
-alpha2 =-25*pi/180; % è opposta all'inclinazione del profilo 2 rispetto ad asse X
-
-U_inf(1)=U; 
-U_inf(2)=0;
+h = 1; % distance from ground
 
 %% Dati profili
 TestCase = 0;
-NCorpi = 1;  % Numero di corpi da analizzare
+NCorpi = 2;  % Numero di corpi da analizzare
 CodiceProfilo = cell(NCorpi, 1);
 CodiceProfilo{1} = '23012';
 CodiceProfilo{2} = '23012';
@@ -25,6 +17,19 @@ Chord = [1 0.25];
 N_pann1 = 300;
 N_pann2 = 150;
 
+
+%% Input
+U = 1;
+U_inf(1)=U; 
+U_inf(2)=0;
+
+alpha1 = -10*pi/180; % è opposta all'inclinazione del profilo 1 rispetto ad asse X
+
+%alpha2 =-25*pi/180; % è opposta all'inclinazione del profilo 2 rispetto ad asse X
+alpha2vect = [alpha1:(1*pi/180):alpha1+(20*pi/180)];
+
+for l = 1:length(alpha2vect)
+alpha2 = alpha2vect(l);
 %% Creazione profilo 1
 i=1;
 [x_nodes1,y_nodes1]=createProfile(CodiceProfilo{i},N_pann1,Chord(i));
@@ -35,17 +40,25 @@ nodes_vect1=[x_nodes1,y_nodes1];
 
 %% Creazione profilo 2
 i=2;
-[x_nodes2,y_nodes2]=createProfile(CodiceProfilo{i},N_pann2,Chord(i));
-x_nodes2=x_nodes2.*cos(alpha2)-y_nodes2.*sin(alpha2);
-y_nodes2=x_nodes2.*sin(alpha2)+y_nodes2.*cos(alpha2);
-x_nodes2 = x_nodes2 + x12; 
-y_nodes2= y_nodes2 + y12 + h;
-nodes_vect2=[x_nodes2,y_nodes2];
 
-if (min(min(y_nodes1),min(y_nodes2))<0)
-     disp('The airfoil touches the ground')
-     error
- end
+x_nodes2 = zeros(N_pann2+1, length(alpha2vect));
+y_nodes2 = zeros(N_pann2+1, length(alpha2vect));
+
+[xnodes2,ynodes2]=createProfile(CodiceProfilo{i},N_pann2,Chord(i));
+
+x_nodes2(:, l) = xnodes2;
+y_nodes2(:, l) = ynodes2;
+
+x_nodes2(:, l)=x_nodes2(:, l).*cos(alpha2)-y_nodes2(:, l).*sin(alpha2);
+y_nodes2(:, l)=x_nodes2(:, l).*sin(alpha2)+y_nodes2(:, l).*cos(alpha2);
+x_nodes2(:, l) = x_nodes2(:, l) + x12.*ones(N_pann2+1, 1); 
+y_nodes2(:, l)= y_nodes2(:, l) + y12.*ones(N_pann2+1, 1) + h.*ones(N_pann2+1, 1);
+nodes_vect2=[x_nodes2(:, l),y_nodes2(:, l)];
+
+% if (min(min(y_nodes1),min(y_nodes2(alpha2)))<0)
+%      disp('The airfoil touches the ground')
+%      error
+%  end
 
 %% Costruisco i profili specchiati
 x_nodes1_m = x_nodes1; 
@@ -61,9 +74,22 @@ x_center1 = 0.5*(x_nodes1(1:N_pann1) + x_nodes1(2:N_pann1+1));
 y_center1 = 0.5*(y_nodes1(1:N_pann1) + y_nodes1(2:N_pann1+1));
 centre_vect1=[x_center1 y_center1];
 % Control points profile 2
-x_center2 = 0.5*(x_nodes2(1:N_pann2) + x_nodes2(2:N_pann2+1)); 
-y_center2 = 0.5*(y_nodes2(1:N_pann2) + y_nodes2(2:N_pann2+1));
-centre_vect2=[x_center2 y_center2];
+x_center2 = zeros(N_pann2+1, length(alpha2vect));
+y_center2 = zeros(N_pann2+1, length(alpha2vect));
+
+for p = 1: N_pann2+1
+    if p <= N_pann2
+x_center2(p, :)  = 0.5*(x_nodes2(p,l) + x_nodes2(p+1, l)); 
+y_center2(p, :)  = 0.5*(y_nodes2(p, l) + y_nodes2(p+1, l));
+    else 
+x_center2(N_pann1+1, :)  = 0.5*(x_nodes2(p,l) + x_nodes2(p+1, l)); 
+y_center2(N_pann1+1, :)  = 0.5*(y_nodes2(p, l) + y_nodes2(p+1, l));      
+    end 
+end
+x_center2;
+y_center2;
+
+%centre_vect2(,l)=[x_center2(:, l)  y_center2(:, l)];
 % Profile 1 vectors
 pan_vect1=zeros(N_pann1,2);
 tangent_versor1=zeros(N_pann1,2);
@@ -561,6 +587,8 @@ end
 Cl2=0;
 for i=1:N_pann2
     Cl2=Cl2-dot(((1/Chord)*Cp2(i,1)*lungh_vect2(i).*normal_versor2(i,:)),[0;1]);
+end
+
 end
 
 
