@@ -3,28 +3,40 @@ close all
 addpath mat_functions
 
 %% Distanza tra i profili in tandem
-x12 = 1.5;  % distance between forward airfoil LE and back airfoil LE
-y12 = 0;
+x12 = 0.9;  % distance between forward airfoil LE and back airfoil LE
+y12 = -0.2;
 h=0.4; % distance from ground
 
 %% Input
 U = 1;
-alpha1 = -5*pi/180; % è opposta all'inclinazione del profilo 1 rispetto ad asse X
-alpha2 =-8*pi/180; % è opposta all'inclinazione del profilo 2 rispetto ad asse X
-
-U_inf(1)=U; 
+alpha1 = -10*pi/180; % è opposta all'inclinazione del profilo 1 rispetto ad asse X
+alpha2_vect=alpha1:-1*pi/180:alpha1-15*pi/180;
+Cl1_vect=[];
+Cl2_vect=[];
+U_inf(1)=U;
 U_inf(2)=0;
+%% Dati profili
+TestCase = 0;
+NCorpi = 2;  % Numero di corpi da analizzare
+CodiceProfilo = cell(NCorpi, 1);
+CodiceProfilo{1} = '23012';
+CodiceProfilo{2} = '23012';
+Chord = [1 0.25];
+N_pann1 = 120;
+N_pann2 = 80;
+
+for l=1:length(alpha2_vect)
+    alpha2=alpha2_vect(l); % è opposta all'inclinazione del profilo 2 rispetto ad asse X
 
 %% Dati profili
 TestCase = 0;
 NCorpi = 2;  % Numero di corpi da analizzare
 CodiceProfilo = cell(NCorpi, 1);
 CodiceProfilo{1} = '0012';
-CodiceProfilo{2} = '0014';
-Chord = [1 1];
-N_pann1 = 80;
-N_pann2 = 150;
-
+CodiceProfilo{2} = '0012';
+Chord = [1 0.2];
+N_pann1 = 120;
+N_pann2 = 80;
 %% Creazione profilo 1
 i=1;
 [x_nodes1,y_nodes1]=createProfile(CodiceProfilo{i},N_pann1,Chord(i));
@@ -360,7 +372,7 @@ for j = 1:N_pann2
     c22= c22 - dot(Uv_j_ri,tangent_versor2(N_pann2,:));   
 end
 
-%% build C12 and c12
+%% Costruisco C12 e c12
 % Induzione profilo 2 su profilo 1
 for j = 1:N_pann2
     R_j=L2G_2((2*j-1:2*j),:);
@@ -395,7 +407,7 @@ for j = 1:N_pann2
     c12=c12-dot(Uv_j_ri,tangent_versor1(N_pann1,:));
 end
 
-%% build C21 and c21 (da qui)
+%% Costruisco C21 e c21
 % Induzione profilo 1 su profilo 2
 for j = 1:N_pann1
     R_j=L2G_1((2*j-1:2*j),:);
@@ -553,14 +565,16 @@ for i=1:N_pann2
 end
 
 %% Calcolo Cl sui 2 profili: adimensionalizzo con la corda maggiore tra le due
-Chord=max(Chord);
 Cl1=0;
 for i=1:N_pann1
-    Cl1=Cl1-dot(((1/Chord)*Cp1(i,1)*lungh_vect1(i).*normal_versor1(i,:)),[0;1]);
+    Cl1=Cl1-dot(((1/Chord(1))*Cp1(i,1)*lungh_vect1(i).*normal_versor1(i,:)),[0;1]);
 end
 Cl2=0;
 for i=1:N_pann2
-    Cl2=Cl2-dot(((1/Chord)*Cp2(i,1)*lungh_vect2(i).*normal_versor2(i,:)),[0;1]);
+    Cl2=Cl2-dot(((1/Chord(2))*Cp2(i,1)*lungh_vect2(i).*normal_versor2(i,:)),[0;1]);
+end
+Cl1_vect(end+1)=Cl1;
+Cl2_vect(end+1)=Cl2;
 end
 
 
