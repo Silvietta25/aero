@@ -336,7 +336,7 @@ for i = 1:N_corpi
     pannello_indotto = 0;
 
     for j_indotto = 1:discretizzazione_corda(i)
-        for k_indotto = 1:discretizzazione_semiapertura_alare(i)
+        for k_indotto = 1:2*discretizzazione_semiapertura_alare(i)
             pannello_indotto = pannello_indotto + 1;
             normale = normali_pannelli{j_indotto, k_indotto};
             
