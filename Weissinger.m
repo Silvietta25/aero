@@ -98,7 +98,7 @@ for i = 1:N_corpi
 
     estremi_ala_tip_LE = [LE_posizione_X(i) LE_posizione_Y(i) LE_posizione_Z(i)]' + [0, semi_apertura_alare, 0]';
     estremi_ala_tip_LE = X_diedro * estremi_ala_tip_LE; % aggiunta diedro
-    estremi_ala_tip_LE(1) = estremi_ala_radice_LE(1) + semi_apertura_alare .* tan(freccia(i)) + corda_radice - corda_tip; % aggiunta freccia
+    estremi_ala_tip_LE(1) = estremi_ala_radice_LE(1) + semi_apertura_alare .* tan(freccia(i)) + corda_radice/4 - corda_tip/4; % aggiunta freccia
     estremi_ala_tip_LE = Y_incidenza_aero * estremi_ala_tip_LE;
     estremi_ala = [estremi_ala, estremi_ala_tip_LE];
 
@@ -230,6 +230,7 @@ for i = 1:N_corpi
 
     for j = 1:length(discretizzazione_direzione_corda)
         plot3(pannelli_x(j, :), pannelli_y(j, :), pannelli_z(j, :), 'color', 'k');
+        hold on
         plot3(vortici_x(j, :), vortici_y(j, :), vortici_z(j, :), 'color', "#4DBEEE");
         hold on
     end
@@ -251,7 +252,7 @@ for i = 1:N_corpi
     for j = 1:discretizzazione_corda(i)
         for k = 1:2*discretizzazione_semiapertura_alare(i)
             normali_pannelli{j,k} = cross(mesh{j,k}-mesh{j+1,k+1}, mesh{j,k+1}-mesh{j+1,k});
-            normali_pannelli{j,k} = normali_pannelli{j,k}/norm(normali_pannelli{j,k});
+            normali_pannelli{j,k} = -normali_pannelli{j,k}/norm(normali_pannelli{j,k});
         end
     end
 
@@ -261,7 +262,7 @@ for i = 1:N_corpi
     pannello_indotto = 0;
 
     for j_indotto = 1:discretizzazione_corda(i)
-        for k_indotto = 1:discretizzazione_semiapertura_alare(i)
+        for k_indotto = 1:2*discretizzazione_semiapertura_alare(i)
 
             pannello_indotto = pannello_indotto + 1;
             vortice_inducente = 0;
@@ -271,7 +272,7 @@ for i = 1:N_corpi
 
             
             for i_inducente = 1:N_corpi
-                for j_inducente = 1:discretizzazione_corda(i)-1
+                for j_inducente = 1:discretizzazione_corda(i)
                     for k_inducente = 1:2*discretizzazione_semiapertura_alare(i)
 
                         vortice_inducente = vortice_inducente + 1;
@@ -291,10 +292,10 @@ for i = 1:N_corpi
                             CP_norm = toll;
                         end
 
-                        U_ind = U_ind + (1/(4*pi))*dot(r0, (r1/norm(r1)) -(r2/norm(r2))).*CP./CP_norm;
+                        U_ind = U_ind + (1/(4*pi))*dot(r0, (r1/norm(r1)) - (r2/norm(r2))).*CP./CP_norm;
 
                         % Induzione vortice portante
-                        estremo_in = vortici{j_inducente+1, k_inducente+1};
+                        estremo_in = vortici{j_inducente, k_inducente+1};
                         estremo_fin = vortici{j_inducente, k_inducente};
                         r0 = estremo_in - estremo_fin;
                         r1 = punto_controllo - estremo_in;
@@ -310,8 +311,8 @@ for i = 1:N_corpi
                         U_ind = U_ind + (1/(4*pi))*dot(r0, (r1/norm(r1)) -(r2/norm(r2))).*CP./CP_norm;
 
                         % Induzione vortice semi-infinito dx
-                        estremo_in = vortici_a_infinito{j_inducente+1, k_inducente+1};
-                        estremo_fin = vortici{j_inducente+1, k_inducente+1};
+                        estremo_in = vortici_a_infinito{j_inducente, k_inducente+1};
+                        estremo_fin = vortici{j_inducente, k_inducente+1};
                         r0 = estremo_in - estremo_fin;
                         r1 = punto_controllo - estremo_in;
                         r2 = punto_controllo - estremo_fin;
@@ -355,7 +356,7 @@ for i = 1:N_corpi
     gamma{i} = zeros(discretizzazione_corda(i), 2*discretizzazione_semiapertura_alare(i));
 
     for j = 1:discretizzazione_corda(i)
-        for k = 1:discretizzazione_semiapertura_alare(i)
+        for k = 1:2*discretizzazione_semiapertura_alare(i)
             pannello = pannello + 1;
             gamma{i}(j,k) = sol(pannello);
         end
