@@ -1,3 +1,5 @@
+%% CODICE WEISSINGER
+
 clear
 close all
 clc
@@ -226,8 +228,6 @@ for i = 1:N_corpi
         end
     end
 
-
-
     for j = 1:length(discretizzazione_direzione_corda)
         plot3(pannelli_x(j, :), pannelli_y(j, :), pannelli_z(j, :), 'color', 'k');
         hold on
@@ -255,7 +255,10 @@ for i = 1:N_corpi
             normali_pannelli{j,k} = -normali_pannelli{j,k}/norm(normali_pannelli{j,k});
         end
     end
+end
 
+
+for i = 1:N_corpi
 
     %% SISTEMA LINEARE
     % Costruzione matrice
