@@ -2,6 +2,8 @@ clear all
 close all
 addpath mat_functions
 
+%% modificata per funzuonare con tanti alpha
+
 %% Distanza tra i profili in tandem
 x12 = 0.9;  % distance between forward airfoil LE and back airfoil LE
 y12 = -0.2;
