@@ -12,24 +12,24 @@ rho = 1.225;
 
 config.NCorpi = 1;
 
-config.RootChord = [1];
-config.DihedralAngle = [0]; % [°]
+config.RootChord = [10];
+config.DihedralAngle = [5]; % [°]
 config.SweepAngle = [10]; % [°]
-config.TaperRatio = [0.5];
-config.Span = 2;
+config.TaperRatio = [0.6];
+config.Span = 80;
 config.LEPosition_X = [0];
 config.LEPosition_Y = [0];
 config.LEPosition_Z = [0];
 
 config.RotationAngle_X = [0]; % per dare rollio (ma devo modificare 
 % createStructure per usarlo)
-ALPHA=10;
+ALPHA=5;
 config.RotationAngle_Y = [ALPHA]; % per dare calettamento
 config.RotationAngle_Z = [0];
 
 % Discretization options
-config.SemiSpanwiseDiscr = [5]; % parti in cui suddivido la semi-apertura alare (M pannelli)
-config.ChordwiseDiscr = [5]; % parti in cui suddivido la corda (N pannelli)
+config.SemiSpanwiseDiscr = [20]; % parti in cui suddivido la semi-apertura alare (M pannelli)
+config.ChordwiseDiscr = [10]; % parti in cui suddivido la corda (N pannelli)
 
 
 %% Preliminary computations
@@ -59,7 +59,7 @@ WingExtremes = cell(config.NCorpi, 1);
 for iCorpo = 1:config.NCorpi
     [ControlPoints{iCorpo}, InducedPoints{iCorpo}, Normals{iCorpo}, ...
         InfiniteVortices{iCorpo}, Vortices{iCorpo}, internalMesh{iCorpo}, ...
-        WingExtremes{iCorpo},LEPoints,TEPoints] = createStructure(config, iCorpo);
+        WingExtremes{iCorpo}] = createStructure(config, iCorpo);
 end
 
 %% Trovo centro aerodinamico delle varie sezioni
