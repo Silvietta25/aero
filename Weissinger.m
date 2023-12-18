@@ -1,3 +1,5 @@
+%% CODICE WEISSINGER
+
 clear
 close all
 clc
@@ -6,6 +8,9 @@ clc
 
 % velocità asintotica
 U_inf = [1 0 0]';
+
+% densità
+rho = 1.225;
 
 % angolo di sideslip (inserire in gradi)
 beta = 0; 
@@ -17,23 +22,22 @@ U_inf = [cos(beta) sin(beta) 0]' .* U_inf;
 % Inserire numero di corpi
 N_corpi = 1;
 
-corda_radice = [10];
-diedro = [5]; % inserire in gradi
+corda_radice = [1]';
+diedro = [0]'; % inserire in gradi
 diedro = deg2rad(diedro);
 
-freccia = [10]; % inserire in gradi
+freccia = [10]'; % inserire in gradi
 freccia = deg2rad(freccia);
 
-rastremazione = [0.6]; 
-lambda = [10]; % allungamento alare
-apertura_alare = 80;
+rastremazione = [0.5]'; 
+apertura_alare = [2]';
 
-LE_posizione_X = [0];
-LE_posizione_Y = [0];
-LE_posizione_Z = [0];
+LE_posizione_X = [0]';
+LE_posizione_Y = [0]';
+LE_posizione_Z = [0]';
 
 % angolo_di_rollio = [0];
-angolo_di_incidenza_aero = [5]; % alpha
+angolo_di_incidenza_aero = [10]'; % alpha
 % angolo_di_beccheggio = [0];
 
 % angolo_di_rollio = deg2rad(angolo_di_rollio);
@@ -41,47 +45,45 @@ angolo_di_incidenza_aero = deg2rad(angolo_di_incidenza_aero); % alpha
 % angolo_di_beccheggio =deg2rad(angolo_di_beccheggio);
 
 % Discretizzazione
-discretizzazione_semiapertura_alare = [20]; % numero panelli direzione apertura su SEMIALA
-discretizzazione_corda = [10]; 
+discretizzazione_semiapertura_alare = [5]'; % numero panelli direzione apertura su SEMIALA
+discretizzazione_corda = [5]'; 
 
 % Inizializzazione sistema lineare
 num_tot_pann = 0;
 for i = 1:N_corpi
     num_tot_pann = num_tot_pann + 2*discretizzazione_corda(i)*discretizzazione_semiapertura_alare(i);
 end
-A = zeros(num_tot_pann, num_tot_pann);
-b = zeros(num_tot_pann, 1);
 
-gamma = cell(N_corpi,1);
-
-
-%% CREAZIONE GEOMETRIA ALA
-% Parametri per costruzione ala
-
-semi_apertura_alare = apertura_alare ./ 2;
-
-superficie_alare = 2 * (semi_apertura_alare .* corda_radice .* ( 1 + rastremazione ) ./ 2);
-
-superficie_piana = superficie_alare .* cos(diedro(1));
-
-corda_tip = corda_radice .* rastremazione;
-
-% Corda media aerodinamica MAC
-MAC = (2/3) .* corda_radice .* ( (1 + rastremazione + rastremazione.^2)./(1 + rastremazione));
 
 %% Creazione struttura ala
+estremi_ala = cell(1,N_corpi);
 
-punti_di_controllo = [];
-punti_di_induzione = [];
-normali_pannelli = [];
-vortici_a_infinito = [];
-vortici = [];
-mesh = [];
-estremi_ala = [];
+mesh = cell(1,N_corpi);
+vortici = cell(1,N_corpi);
+punti_di_controllo = cell(1,N_corpi);
+punti_di_induzione = cell(1,N_corpi);
+normali_pannelli = cell(1,N_corpi);
+vortici_a_infinito = cell(1,N_corpi);
+superficie_alare = zeros(1,N_corpi);
 
 figure
 
 for i = 1:N_corpi
+
+    %% CREAZIONE GEOMETRIA ALA
+    % Parametri per costruzione ala
+    
+    semi_apertura_alare = apertura_alare(i) / 2;
+    
+    superficie_alare(i) = 2 * (semi_apertura_alare * corda_radice(i) * ( 1 + rastremazione(i) ) / 2);
+    
+    superficie_piana = superficie_alare(i) * cos(diedro(i));
+    
+    corda_tip = corda_radice(i) * rastremazione(i);
+    
+    % Corda media aerodinamica MAC
+    MAC = (2/3) * corda_radice(i) * ( (1 + rastremazione(i) + rastremazione(i)^2)/(1 + rastremazione(i)));
+
     Y_incidenza_aero = [cos(angolo_di_incidenza_aero(i))        0   sin(angolo_di_incidenza_aero(i));
                                         0                       1                   0               ;          
                         -sin(angolo_di_incidenza_aero(i))       0   cos(angolo_di_incidenza_aero(i))];
@@ -91,20 +93,20 @@ for i = 1:N_corpi
                     0       sin(diedro(i))    cos(diedro(i))];
 
     estremi_ala_radice_LE = [LE_posizione_X(i) LE_posizione_Y(i) LE_posizione_Z(i)]';
-    estremi_ala = [estremi_ala, estremi_ala_radice_LE];
+    estremi_ala{1,i} = [estremi_ala{1,i}, estremi_ala_radice_LE];
 
     estremi_ala_radice_TE = estremi_ala_radice_LE + Y_incidenza_aero * [corda_radice(i), 0, 0]';
-    estremi_ala = [estremi_ala, estremi_ala_radice_TE];
+    estremi_ala{1,i} = [estremi_ala{1,i}, estremi_ala_radice_TE];
 
     estremi_ala_tip_LE = [LE_posizione_X(i) LE_posizione_Y(i) LE_posizione_Z(i)]' + [0, semi_apertura_alare, 0]';
     estremi_ala_tip_LE = X_diedro * estremi_ala_tip_LE; % aggiunta diedro
-    estremi_ala_tip_LE(1) = estremi_ala_radice_LE(1) + semi_apertura_alare .* tan(freccia(i)) + corda_radice - corda_tip; % aggiunta freccia
-    estremi_ala_tip_LE = Y_incidenza_aero * estremi_ala_tip_LE;
-    estremi_ala = [estremi_ala, estremi_ala_tip_LE];
+    estremi_ala_tip_LE(1) = estremi_ala_radice_LE(1) + semi_apertura_alare * tan(freccia(i)) + corda_radice(i)/4 - corda_tip/4; % aggiunta freccia
+    estremi_ala_tip_LE = Y_incidenza_aero * (estremi_ala_tip_LE - [LE_posizione_X(i) LE_posizione_Y(i) LE_posizione_Z(i)]') + [LE_posizione_X(i) LE_posizione_Y(i) LE_posizione_Z(i)]';
+    estremi_ala{1,i} = [estremi_ala{1,i}, estremi_ala_tip_LE];
 
     estremi_ala_tip_TE = estremi_ala_tip_LE + Y_incidenza_aero * [corda_tip 0 0]';
 
-    estremi_ala = [estremi_ala, estremi_ala_tip_TE];
+    estremi_ala{1,i} = [estremi_ala{1,i}, estremi_ala_tip_TE];
 
     % Discretizzazione direzione ala
     discretizzazione_direzione_ala = linspace(0, 1, discretizzazione_semiapertura_alare(i)+1);
@@ -113,8 +115,8 @@ for i = 1:N_corpi
     punti_TE = zeros(3, length(discretizzazione_direzione_ala));
 
     for j = 1:length(discretizzazione_direzione_ala)
-        punti_LE(:, j) = (estremi_ala_tip_LE - estremi_ala_radice_LE).* discretizzazione_direzione_ala(j) + estremi_ala_radice_LE;
-        punti_TE(:, j) = (estremi_ala_tip_TE - estremi_ala_radice_TE) .* discretizzazione_direzione_ala(j) + estremi_ala_radice_TE;
+        punti_LE(:, j) = (estremi_ala_tip_LE - estremi_ala_radice_LE)* discretizzazione_direzione_ala(j) + estremi_ala_radice_LE;
+        punti_TE(:, j) = (estremi_ala_tip_TE - estremi_ala_radice_TE) * discretizzazione_direzione_ala(j) + estremi_ala_radice_TE;
     end
 
     % Discretizzazione direzione corda
@@ -143,32 +145,32 @@ for i = 1:N_corpi
     end
 
     % Creazione mesh
-    mesh = cell(discretizzazione_corda(i), discretizzazione_semiapertura_alare(i)*2 + 1);
-    vortici = cell(discretizzazione_corda(i), discretizzazione_semiapertura_alare(i)*2 +1);
-    punti_di_controllo = cell(discretizzazione_corda(i), discretizzazione_semiapertura_alare(i)*2);
-    punti_di_induzione = cell(discretizzazione_corda(i), discretizzazione_semiapertura_alare(i)*2);
-    normali_pannelli = cell(discretizzazione_corda(i), discretizzazione_semiapertura_alare(i)*2);
-    vortici_a_infinito = cell(discretizzazione_corda(i), discretizzazione_semiapertura_alare(i)*2 + 1);
+    mesh_i = cell(discretizzazione_corda(i), discretizzazione_semiapertura_alare(i)*2 + 1);
+    vortici_i = cell(discretizzazione_corda(i), discretizzazione_semiapertura_alare(i)*2 +1);
+    punti_di_controllo_i = cell(discretizzazione_corda(i), discretizzazione_semiapertura_alare(i)*2);
+    punti_di_induzione_i = cell(discretizzazione_corda(i), discretizzazione_semiapertura_alare(i)*2);
+    normali_pannelli_i = cell(discretizzazione_corda(i), discretizzazione_semiapertura_alare(i)*2);
+    vortici_a_infinito_i = cell(discretizzazione_corda(i), discretizzazione_semiapertura_alare(i)*2 + 1);
     
-    lunghezza_vortici_infinito = 100 * corda_radice;
+    lunghezza_vortici_infinito = 50 * corda_radice; %% ATTENZIONE LUNGHEZZA VORTICI
     
     % Discretizzazione direzione corda
     for j = 1:length(discretizzazione_direzione_corda)
     
         if j ~= length(discretizzazione_direzione_corda)
             for k = 1:length(discretizzazione_direzione_ala)
-                vortici{j,k + length(discretizzazione_direzione_ala) - 1} = (quarto_tip(:, j) - quarto_radice(:, j)).*(discretizzazione_direzione_ala(k)) + quarto_radice(:, j);
-                vortici_a_infinito{j,k + length(discretizzazione_direzione_ala) - 1} = vortici{j,k + length(discretizzazione_direzione_ala) - 1} + [lunghezza_vortici_infinito 0 0]';
+                vortici_i{j,k + length(discretizzazione_direzione_ala) - 1} = (quarto_tip(:, j) - quarto_radice(:, j)).*(discretizzazione_direzione_ala(k)) + quarto_radice(:, j);
+                vortici_a_infinito_i{j,k + length(discretizzazione_direzione_ala) - 1} = vortici_i{j,k + length(discretizzazione_direzione_ala) - 1} + [lunghezza_vortici_infinito(i) 0 0]';
     
                 if k ~= length(discretizzazione_direzione_ala) 
-                    punti_di_controllo{j,k + length(discretizzazione_direzione_ala) - 1} = (trequarti_tip(:, j) - trequarti_radice(:, j)).*((discretizzazione_direzione_ala(k)+ discretizzazione_direzione_ala(k+1))./2) + trequarti_radice(:, j);
-                    punti_di_induzione{j,k + length(discretizzazione_direzione_ala) - 1} = (quarto_tip(:, j) - quarto_radice(:, j)).*((discretizzazione_direzione_ala(k) + discretizzazione_direzione_ala(k+1))./2) + quarto_radice(:, j);
+                    punti_di_controllo_i{j,k + length(discretizzazione_direzione_ala) - 1} = (trequarti_tip(:, j) - trequarti_radice(:, j)).*((discretizzazione_direzione_ala(k)+ discretizzazione_direzione_ala(k+1))./2) + trequarti_radice(:, j);
+                    punti_di_induzione_i{j,k + length(discretizzazione_direzione_ala) - 1} = (quarto_tip(:, j) - quarto_radice(:, j)).*((discretizzazione_direzione_ala(k) + discretizzazione_direzione_ala(k+1))./2) + quarto_radice(:, j);
                 end
             end
         end
 
         for k = 1:length(discretizzazione_direzione_ala)
-            mesh{j,k + length(discretizzazione_direzione_ala) - 1} = (punti_TE(:,k) - punti_LE(:,k)).* discretizzazione_direzione_corda(j) + punti_LE(:,k);
+            mesh_i{j,k + length(discretizzazione_direzione_ala) - 1} = (punti_TE(:,k) - punti_LE(:,k)).* discretizzazione_direzione_corda(j) + punti_LE(:,k);
         end
     end
 
@@ -182,24 +184,28 @@ for i = 1:N_corpi
 
         if j ~= length(discretizzazione_direzione_corda)
             for k = 1:length(discretizzazione_direzione_ala)
-                vortici{j,k} = (vortici{j,2*length(discretizzazione_direzione_ala)-k} - [spost_X spost_Y spost_Z]');
-                vortici{j,k}(2) = -(vortici{j,k}(2));
-                vortici_a_infinito{j,k} = (vortici_a_infinito{j,2*length(discretizzazione_direzione_ala)-k} - [spost_X spost_Y spost_Z]');
-                vortici_a_infinito{j,k}(2) = -(vortici_a_infinito{j,k}(2));
+                vortici_i{j,k} = (vortici_i{j,2*length(discretizzazione_direzione_ala)-k} - [spost_X spost_Y spost_Z]');
+                vortici_i{j,k}(2) = -(vortici_i{j,k}(2));
+                vortici_i{j,k} = vortici_i{j,k} + [spost_X spost_Y spost_Z]';
+                vortici_a_infinito_i{j,k} = (vortici_a_infinito_i{j,2*length(discretizzazione_direzione_ala)-k} - [spost_X spost_Y spost_Z]');
+                vortici_a_infinito_i{j,k}(2) = -(vortici_a_infinito_i{j,k}(2));
+                vortici_a_infinito_i{j,k} = vortici_a_infinito_i{j,k} + [spost_X spost_Y spost_Z]';
     
                 if k ~= length(discretizzazione_direzione_ala) 
-                    punti_di_controllo{j,k} = (punti_di_controllo{j,2*length(discretizzazione_direzione_ala)-1-k} - [spost_X spost_Y spost_Z]');
-                    punti_di_controllo{j,k}(2) = -(punti_di_controllo{j,k}(2));
-                    punti_di_induzione{j,k} = (punti_di_induzione{j,2*length(discretizzazione_direzione_ala)-1-k} - [spost_X spost_Y spost_Z]');
-                    punti_di_induzione{j,k}(2) = -(punti_di_induzione{j,k}(2));
+                    punti_di_controllo_i{j,k} = (punti_di_controllo_i{j,2*length(discretizzazione_direzione_ala)-1-k} - [spost_X spost_Y spost_Z]');
+                    punti_di_controllo_i{j,k}(2) = -(punti_di_controllo_i{j,k}(2));
+                    punti_di_controllo_i{j,k} = punti_di_controllo_i{j,k} + [spost_X spost_Y spost_Z]';
+                    punti_di_induzione_i{j,k} = (punti_di_induzione_i{j,2*length(discretizzazione_direzione_ala)-1-k} - [spost_X spost_Y spost_Z]');
+                    punti_di_induzione_i{j,k}(2) = -(punti_di_induzione_i{j,k}(2));
+                    punti_di_induzione_i{j,k} = punti_di_induzione_i{j,k} + [spost_X spost_Y spost_Z]';
                 end
             end
         end
 
         for k = 1:length(discretizzazione_direzione_ala) - 1
-            mesh{j,k} = (mesh{j,2*length(discretizzazione_direzione_ala)-k} - [spost_X spost_Y spost_Z]');
-            mesh{j,k}(2) = -(mesh{j,k}(2));
-            mesh{j,k} = mesh{j,k} + [spost_X spost_Y spost_Z]';
+            mesh_i{j,k} = (mesh_i{j,2*length(discretizzazione_direzione_ala)-k} - [spost_X spost_Y spost_Z]');
+            mesh_i{j,k}(2) = -(mesh_i{j,k}(2));
+            mesh_i{j,k} = mesh_i{j,k} + [spost_X spost_Y spost_Z]';
         end
     end
     
@@ -214,22 +220,21 @@ for i = 1:N_corpi
     
     for j = 1:length(discretizzazione_direzione_corda)
         for k = 1:2*length(discretizzazione_direzione_ala)-1
-            pannelli_x(j, k) = mesh{j,k}(1);
-            pannelli_y(j, k) = mesh{j,k}(2);
-            pannelli_z(j, k) = mesh{j,k}(3);
+            pannelli_x(j, k) = mesh_i{j,k}(1);
+            pannelli_y(j, k) = mesh_i{j,k}(2);
+            pannelli_z(j, k) = mesh_i{j,k}(3);
             
             if j ~= length(discretizzazione_direzione_corda)
-                vortici_x(j, k) = vortici{j,k}(1);
-                vortici_y(j, k) = vortici{j,k}(2);
-                vortici_z(j, k) = vortici{j,k}(3);
+                vortici_x(j, k) = vortici_i{j,k}(1);
+                vortici_y(j, k) = vortici_i{j,k}(2);
+                vortici_z(j, k) = vortici_i{j,k}(3);
             end
         end
     end
 
-
-
     for j = 1:length(discretizzazione_direzione_corda)
         plot3(pannelli_x(j, :), pannelli_y(j, :), pannelli_z(j, :), 'color', 'k');
+        hold on
         plot3(vortici_x(j, :), vortici_y(j, :), vortici_z(j, :), 'color', "#4DBEEE");
         hold on
     end
@@ -242,44 +247,59 @@ for i = 1:N_corpi
 
     for j = 1:discretizzazione_corda(i)
         for k = 1:2*discretizzazione_semiapertura_alare(i)
-            plot3(punti_di_controllo{j,k}(1), punti_di_controllo{j,k}(2), punti_di_controllo{j,k}(3), '.' ,'color', 'red')
-            plot3(punti_di_induzione{j,k}(1), punti_di_induzione{j,k}(2), punti_di_induzione{j,k}(3), '.' ,'color', 'blue')
+            plot3(punti_di_controllo_i{j,k}(1), punti_di_controllo_i{j,k}(2), punti_di_controllo_i{j,k}(3), '.' ,'color', 'red')
+            plot3(punti_di_induzione_i{j,k}(1), punti_di_induzione_i{j,k}(2), punti_di_induzione_i{j,k}(3), '.' ,'color', 'blue')
         end
     end
 
     % Calcolo normali pannelli
     for j = 1:discretizzazione_corda(i)
         for k = 1:2*discretizzazione_semiapertura_alare(i)
-            normali_pannelli{j,k} = cross(mesh{j,k}-mesh{j+1,k+1}, mesh{j,k+1}-mesh{j+1,k});
-            normali_pannelli{j,k} = normali_pannelli{j,k}/norm(normali_pannelli{j,k});
+            normali_pannelli_i{j,k} = cross(mesh_i{j,k}-mesh_i{j+1,k+1}, mesh_i{j,k+1}-mesh_i{j+1,k});
+            normali_pannelli_i{j,k} = -normali_pannelli_i{j,k}/norm(normali_pannelli_i{j,k});
         end
     end
 
+    mesh{1,i} = mesh_i;
+    vortici{1,i} = vortici_i;
+    punti_di_controllo{1,i} = punti_di_controllo_i;
+    punti_di_induzione{1,i} = punti_di_induzione_i;
+    normali_pannelli{1,i} = normali_pannelli_i;
+    vortici_a_infinito{1,i} = vortici_a_infinito_i;
+    
+end
 
-    %% SISTEMA LINEARE
-    % Costruzione matrice
-    pannello_indotto = 0;
 
+%% SISTEMA LINEARE
+% Costruzione matrice
+A = zeros(num_tot_pann, num_tot_pann);
+b = zeros(num_tot_pann, 1);
+
+gamma = cell(1, N_corpi);
+
+pannello_indotto = 0;
+
+for i = 1:N_corpi
     for j_indotto = 1:discretizzazione_corda(i)
-        for k_indotto = 1:discretizzazione_semiapertura_alare(i)
+        for k_indotto = 1:2*discretizzazione_semiapertura_alare(i)
 
             pannello_indotto = pannello_indotto + 1;
             vortice_inducente = 0;
 
-            punto_controllo = punti_di_controllo{j_indotto, k_indotto};
-            normale= normali_pannelli{j_indotto, k_indotto};
+            punto_controllo = punti_di_controllo{1,i}{j_indotto, k_indotto};
+            normale= normali_pannelli{1,i}{j_indotto, k_indotto};
 
             
             for i_inducente = 1:N_corpi
-                for j_inducente = 1:discretizzazione_corda(i)-1
-                    for k_inducente = 1:2*discretizzazione_semiapertura_alare(i)
+                for j_inducente = 1:discretizzazione_corda(i_inducente)
+                    for k_inducente = 1:2*discretizzazione_semiapertura_alare(i_inducente)
 
                         vortice_inducente = vortice_inducente + 1;
                         U_ind = 0;
 
                         % Induzione vortice semi-infinito sx
-                        estremo_in = vortici{j_inducente, k_inducente};
-                        estremo_fin = vortici_a_infinito{j_inducente, k_inducente};
+                        estremo_in = vortici{1,i_inducente}{j_inducente, k_inducente};
+                        estremo_fin = vortici_a_infinito{1,i_inducente}{j_inducente, k_inducente};
                         r0 = estremo_in - estremo_fin;
                         r1 = punto_controllo - estremo_in;
                         r2 = punto_controllo - estremo_fin;
@@ -291,11 +311,11 @@ for i = 1:N_corpi
                             CP_norm = toll;
                         end
 
-                        U_ind = U_ind + (1/(4*pi))*dot(r0, (r1/norm(r1)) -(r2/norm(r2))).*CP./CP_norm;
+                        U_ind = U_ind + (1/(4*pi))*dot(r0, (r1/norm(r1)) - (r2/norm(r2))).*CP./CP_norm;
 
                         % Induzione vortice portante
-                        estremo_in = vortici{j_inducente+1, k_inducente+1};
-                        estremo_fin = vortici{j_inducente, k_inducente};
+                        estremo_in = vortici{1,i_inducente}{j_inducente, k_inducente+1};
+                        estremo_fin = vortici{1,i_inducente}{j_inducente, k_inducente};
                         r0 = estremo_in - estremo_fin;
                         r1 = punto_controllo - estremo_in;
                         r2 = punto_controllo - estremo_fin;
@@ -310,8 +330,8 @@ for i = 1:N_corpi
                         U_ind = U_ind + (1/(4*pi))*dot(r0, (r1/norm(r1)) -(r2/norm(r2))).*CP./CP_norm;
 
                         % Induzione vortice semi-infinito dx
-                        estremo_in = vortici_a_infinito{j_inducente+1, k_inducente+1};
-                        estremo_fin = vortici{j_inducente+1, k_inducente+1};
+                        estremo_in = vortici_a_infinito{1,i_inducente}{j_inducente, k_inducente+1};
+                        estremo_fin = vortici{1,i_inducente}{j_inducente, k_inducente+1};
                         r0 = estremo_in - estremo_fin;
                         r1 = punto_controllo - estremo_in;
                         r2 = punto_controllo - estremo_fin;
@@ -330,18 +350,19 @@ for i = 1:N_corpi
             end
         end
     end
+end
 
 
-    % Costruzione termine noto
-    pannello_indotto = 0;
+% Costruzione termine noto
+pannello_indotto = 0;
 
+for i = 1:N_corpi
     for j_indotto = 1:discretizzazione_corda(i)
         for k_indotto = 1:2*discretizzazione_semiapertura_alare(i)
             pannello_indotto = pannello_indotto + 1;
-            normale = normali_pannelli{j_indotto, k_indotto};
+            normale = normali_pannelli{1,i}{j_indotto, k_indotto};
             
             b(pannello_indotto) = -dot(U_inf, normale);
-
         end
     end
 end
@@ -352,17 +373,143 @@ sol = linsolve(A,b);
 pannello = 0;
 
 for i = 1:N_corpi
-    gamma{i} = zeros(discretizzazione_corda(i), 2*discretizzazione_semiapertura_alare(i));
+    gamma{1,i} = zeros(discretizzazione_corda(i), 2*discretizzazione_semiapertura_alare(i));
 
     for j = 1:discretizzazione_corda(i)
-        for k = 1:discretizzazione_semiapertura_alare(i)
+        for k = 1:2*discretizzazione_semiapertura_alare(i)
             pannello = pannello + 1;
-            gamma{i}(j,k) = sol(pannello);
+            gamma{1,i}(j,k) = sol(pannello);
         end
     end
 end
-    
    
+
+%% Calcolo forze
+% Portanza
+gamma_sezione = cell(1,N_corpi);
+L_3D = cell(1,N_corpi);
+L_2D = cell(1,N_corpi);
+cL_3D = cell(1,N_corpi);
+delta_b_vect = cell(1,N_corpi);
+
+for i = 1:N_corpi
+    L_3D_sezione = 0;
+    for j = 1:2*discretizzazione_semiapertura_alare(i)
+        gamma_sezione{1,i}{1,j} = sum(gamma{1,i}(:,j));
+        gamma_i = cell2mat(gamma_sezione{1,i}(1,j));
+        L_2D{1,i}{1,j} = rho*norm(U_inf)^2*gamma_i*cos(diedro(i));
+        
+        % deltab
+        delta_b_vect{1,i}{1,j} = apertura_alare(i)/(2*discretizzazione_semiapertura_alare(i));
+        delta_b = cell2mat(delta_b_vect{1,i}(1,j));
+
+        % L_3D sezione
+        L_2D_i = cell2mat(L_2D{1,i}(1,j));
+        L_3D_sezione = L_3D_sezione + L_2D_i*delta_b;
+    end
+    
+    % L_3D
+    L_3D{1,i} = L_3D_sezione;
+    cL_3D{1,i} = L_3D{1,i} / (0.5*rho*norm(U_inf)^2*superficie_alare(i));
+end
+
+
+% Resistenza
+punti_quarto_corda = cell(1, N_corpi);
+
+for i = 1 :N_corpi
+    for k = 1:2*discretizzazione_semiapertura_alare(i)
+        punto_medio_pannello_LE = (mesh{1,i}{1,k} - mesh{1,i}{1,k+1})/2 + mesh{1,i}{1,k+1};
+        punto_medio_pannello_TE = (mesh{1,i}{length(discretizzazione_direzione_corda),k} - mesh{1,i}{length(discretizzazione_direzione_corda),k+1})/2 + mesh{1,i}{length(discretizzazione_direzione_corda),k+1};
+        punto_quarto_corda = punto_medio_pannello_LE + 0.25*(punto_medio_pannello_TE-punto_medio_pannello_LE);
+        punti_quarto_corda{1,i}{1,k} = punto_quarto_corda;
+        plot3(punto_quarto_corda(1), punto_quarto_corda(2), punto_quarto_corda(3), '.', 'Color', "#A2142F")
+    end
+end
+
+num_profili_ala = cell(1, N_corpi);
+for i = 1:N_corpi
+    num_profili_ala{1,i} = 2*discretizzazione_semiapertura_alare(i);
+end
+
+velocita_induzione_profili = cell(1, N_corpi);
+alpha_ind = cell(1, N_corpi);
+
+D_2D = cell(1,N_corpi);
+D_3D = cell(1,N_corpi);
+cD_3D = cell(1,N_corpi);
+
+for i = 1:N_corpi
+    D_3D_sezione = 0;
+    for k_indotto = 1:(num_profili_ala{1,i})
+        
+        v_ind = 0;
+        punto_controllo = punti_quarto_corda{1,i}{1, k_indotto};
+        normale= normali_pannelli{1,i}{1, k_indotto};
+
+
+        for i_inducente = 1:N_corpi
+            for j_inducente = 1:discretizzazione_corda(i_inducente)
+                for k_inducente = 1:2*discretizzazione_semiapertura_alare(i_inducente)
+
+                    % Induzione vortice semi-infinito sx
+                    estremo_in = vortici{1,i_inducente}{j_inducente, k_inducente};
+                    estremo_fin = vortici_a_infinito{1,i_inducente}{j_inducente, k_inducente};
+                    r0 = estremo_in - estremo_fin;
+                    r1 = punto_controllo - estremo_in;
+                    r2 = punto_controllo - estremo_fin;
+
+                    toll = 1e-10;
+                    CP = cross(r1, r2);
+                    CP_norm = dot(CP, CP);
+                    if(CP_norm < toll)
+                        CP_norm = toll;
+                    end
+                    
+                    gamma_ind = gamma{1,i_inducente}(j_inducente, k_inducente);
+                    v_ind = v_ind + (gamma_ind/(4*pi))*dot(r0, (r1/norm(r1)) - (r2/norm(r2))).*CP./CP_norm;
+
+                    % Induzione vortice semi-infinito dx
+                    estremo_in = vortici_a_infinito{1,i_inducente}{j_inducente, k_inducente+1};
+                    estremo_fin = vortici{1,i_inducente}{j_inducente, k_inducente+1};
+                    r0 = estremo_in - estremo_fin;
+                    r1 = punto_controllo - estremo_in;
+                    r2 = punto_controllo - estremo_fin;
+
+                    toll = 1e-10;
+                    CP = cross(r1, r2);
+                    CP_norm = dot(CP, CP);
+                    if(CP_norm < toll)
+                        CP_norm = toll;
+                    end
+
+                    gamma_ind = gamma{1,i_inducente}(j_inducente, k_inducente);
+                    v_ind = v_ind + (gamma_ind/(4*pi))*dot(r0, (r1/norm(r1)) -(r2/norm(r2))).*CP./CP_norm;
+                end
+            end
+        end
+        velocita_induzione_profili{1,i}{1,k_indotto} = v_ind;
+
+        % alpha indotto
+        alpha_ind{1,i}{1, k_indotto} = atand(dot(v_ind, normale)/norm(U_inf));
+        alpha_i = alpha_ind{1,i}{1, k_indotto};
+
+        % drag 2D
+        D_2D{1,i}{1,k_indotto} = L_2D{1,i}{1, k_indotto}*sind(abs(alpha_i));
+        D_2D_i = D_2D{1,i}{1,k_indotto};
+
+        % deltab
+        delta_b = cell2mat(delta_b_vect{1,i}(1,k_indotto));
+
+        % drag 3D
+        D_3D_sezione = D_3D_sezione + delta_b*D_2D_i;
+        D_3D{1,i} = D_3D_sezione;
+        cD_3D{1,i} = D_3D_sezione / (0.5*rho*norm(U_inf)^2*superficie_alare(i));
+    end
+end
+
+
+
 
 
 
