@@ -5,7 +5,6 @@ addpath mat_functions
 %% modificata per funzuonare con tanti alpha
 
 %% Distanza tra i profili in tandem
-<<<<<<< HEAD:Hess_Smith_tandem_and_ground_mod.m
 x12 = 0.9;  % distance between forward airfoil LE and back airfoil LE
 y12 = -0.2;
 h=0.4; % distance from ground
@@ -30,23 +29,22 @@ N_pann2 = 80;
 
 for l=1:length(alpha2_vect)
     alpha2=alpha2_vect(l); % è opposta all'inclinazione del profilo 2 rispetto ad asse X
-=======
 x12 = 1.05;  % distance between forward airfoil LE and back airfoil LE
 y12 = -0.2;
 h = 1; % distance from ground
->>>>>>> main:Hess_Smith_tandem_and_ground.m
+
 
 %% Dati profili
 TestCase = 0;
 NCorpi = 2;  % Numero di corpi da analizzare
 CodiceProfilo = cell(NCorpi, 1);
-<<<<<<< HEAD:Hess_Smith_tandem_and_ground_mod.m
+
 CodiceProfilo{1} = '0012';
 CodiceProfilo{2} = '0012';
 Chord = [1 0.2];
 N_pann1 = 120;
 N_pann2 = 80;
-=======
+
 CodiceProfilo{1} = '23012';
 CodiceProfilo{2} = '23012';
 Chord = [1 0.25];
@@ -66,7 +64,7 @@ alpha2vect = [alpha1:(1*pi/180):alpha1+(20*pi/180)];
 
 for l = 1:length(alpha2vect)
 alpha2 = alpha2vect(l);
->>>>>>> main:Hess_Smith_tandem_and_ground.m
+
 %% Creazione profilo 1
 i=1;
 [x_nodes1,y_nodes1]=createProfile(CodiceProfilo{i},N_pann1,Chord(i));
