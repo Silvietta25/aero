@@ -15,7 +15,7 @@ function [x,y] = createProfile(Profilo,NPannelli,Chord,Flap)
         fprintf(fileID,'gdes\n');
 
         if nargin==4
-           fprintf(fileID,'flap 0.75 0 10\n');
+           fprintf(fileID,'flap 0.75 0 15\n');
            % nell'ordine sono: coord_x (è sensato sceglierla a 3/4 
            % della corda) e coord_y cerniera flap, angolo di
            % deflessione flap verso il basso in gradi

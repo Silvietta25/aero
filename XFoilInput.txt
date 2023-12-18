@@ -1,4 +1,8 @@
+<<<<<<< HEAD
+naca  23012
+=======
 naca  0014
+>>>>>>> mattia
 
 pane
 
@@ -11,7 +15,11 @@ ppar
 n  151
 
 
+<<<<<<< HEAD
+save  NACA_23012.dat
+=======
 save  NACA_0014.dat
+>>>>>>> mattia
 
 y
 
