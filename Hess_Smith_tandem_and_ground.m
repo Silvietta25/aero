@@ -3,10 +3,18 @@ close all
 addpath mat_functions
 
 %% Distanza tra i profili in tandem
-x12 = 1.05;  % distance between forward airfoil LE and back airfoil LE
+x12 = 0.9;  % distance between forward airfoil LE and back airfoil LE
 y12 = -0.2;
-h = 1; % distance from ground
+h=0.4; % distance from ground
 
+%% Input
+U = 1;
+alpha1 = -10*pi/180; % è opposta all'inclinazione del profilo 1 rispetto ad asse X
+alpha2_vect=alpha1:-1*pi/180:alpha1-15*pi/180;
+Cl1_vect=[];
+Cl2_vect=[];
+U_inf(1)=U;
+U_inf(2)=0;
 %% Dati profili
 TestCase = 0;
 NCorpi = 2;  % Numero di corpi da analizzare
@@ -14,22 +22,21 @@ CodiceProfilo = cell(NCorpi, 1);
 CodiceProfilo{1} = '23012';
 CodiceProfilo{2} = '23012';
 Chord = [1 0.25];
-N_pann1 = 300;
-N_pann2 = 150;
+N_pann1 = 120;
+N_pann2 = 80;
 
+for l=1:length(alpha2_vect)
+    alpha2=alpha2_vect(l); % è opposta all'inclinazione del profilo 2 rispetto ad asse X
 
-%% Input
-U = 1;
-U_inf(1)=U; 
-U_inf(2)=0;
-
-alpha1 = -10*pi/180; % è opposta all'inclinazione del profilo 1 rispetto ad asse X
-
-%alpha2 =-25*pi/180; % è opposta all'inclinazione del profilo 2 rispetto ad asse X
-alpha2vect = [alpha1:(1*pi/180):alpha1+(20*pi/180)];
-
-for l = 1:length(alpha2vect)
-alpha2 = alpha2vect(l);
+%% Dati profili
+TestCase = 0;
+NCorpi = 2;  % Numero di corpi da analizzare
+CodiceProfilo = cell(NCorpi, 1);
+CodiceProfilo{1} = '0012';
+CodiceProfilo{2} = '0012';
+Chord = [1 0.2];
+N_pann1 = 120;
+N_pann2 = 80;
 %% Creazione profilo 1
 i=1;
 [x_nodes1,y_nodes1]=createProfile(CodiceProfilo{i},N_pann1,Chord(i));
@@ -40,25 +47,17 @@ nodes_vect1=[x_nodes1,y_nodes1];
 
 %% Creazione profilo 2
 i=2;
+[x_nodes2,y_nodes2]=createProfile(CodiceProfilo{i},N_pann2,Chord(i));
+x_nodes2=x_nodes2.*cos(alpha2)-y_nodes2.*sin(alpha2);
+y_nodes2=x_nodes2.*sin(alpha2)+y_nodes2.*cos(alpha2);
+x_nodes2 = x_nodes2 + x12; 
+y_nodes2= y_nodes2 + y12 + h;
+nodes_vect2=[x_nodes2,y_nodes2];
 
-x_nodes2 = zeros(N_pann2+1, length(alpha2vect));
-y_nodes2 = zeros(N_pann2+1, length(alpha2vect));
-
-[xnodes2,ynodes2]=createProfile(CodiceProfilo{i},N_pann2,Chord(i));
-
-x_nodes2(:, l) = xnodes2;
-y_nodes2(:, l) = ynodes2;
-
-x_nodes2(:, l)=x_nodes2(:, l).*cos(alpha2)-y_nodes2(:, l).*sin(alpha2);
-y_nodes2(:, l)=x_nodes2(:, l).*sin(alpha2)+y_nodes2(:, l).*cos(alpha2);
-x_nodes2(:, l) = x_nodes2(:, l) + x12.*ones(N_pann2+1, 1); 
-y_nodes2(:, l)= y_nodes2(:, l) + y12.*ones(N_pann2+1, 1) + h.*ones(N_pann2+1, 1);
-nodes_vect2=[x_nodes2(:, l),y_nodes2(:, l)];
-
-% if (min(min(y_nodes1),min(y_nodes2(alpha2)))<0)
-%      disp('The airfoil touches the ground')
-%      error
-%  end
+if (min(min(y_nodes1),min(y_nodes2))<0)
+     disp('The airfoil touches the ground')
+     error
+ end
 
 %% Costruisco i profili specchiati
 x_nodes1_m = x_nodes1; 
@@ -74,22 +73,9 @@ x_center1 = 0.5*(x_nodes1(1:N_pann1) + x_nodes1(2:N_pann1+1));
 y_center1 = 0.5*(y_nodes1(1:N_pann1) + y_nodes1(2:N_pann1+1));
 centre_vect1=[x_center1 y_center1];
 % Control points profile 2
-x_center2 = zeros(N_pann2+1, length(alpha2vect));
-y_center2 = zeros(N_pann2+1, length(alpha2vect));
-
-for p = 1: N_pann2+1
-    if p <= N_pann2
-x_center2(p, :)  = 0.5*(x_nodes2(p,l) + x_nodes2(p+1, l)); 
-y_center2(p, :)  = 0.5*(y_nodes2(p, l) + y_nodes2(p+1, l));
-    else 
-x_center2(N_pann1+1, :)  = 0.5*(x_nodes2(p,l) + x_nodes2(p+1, l)); 
-y_center2(N_pann1+1, :)  = 0.5*(y_nodes2(p, l) + y_nodes2(p+1, l));      
-    end 
-end
-x_center2;
-y_center2;
-
-%centre_vect2(,l)=[x_center2(:, l)  y_center2(:, l)];
+x_center2 = 0.5*(x_nodes2(1:N_pann2) + x_nodes2(2:N_pann2+1)); 
+y_center2 = 0.5*(y_nodes2(1:N_pann2) + y_nodes2(2:N_pann2+1));
+centre_vect2=[x_center2 y_center2];
 % Profile 1 vectors
 pan_vect1=zeros(N_pann1,2);
 tangent_versor1=zeros(N_pann1,2);
@@ -386,7 +372,7 @@ for j = 1:N_pann2
     c22= c22 - dot(Uv_j_ri,tangent_versor2(N_pann2,:));   
 end
 
-%% build C12 and c12
+%% Costruisco C12 e c12
 % Induzione profilo 2 su profilo 1
 for j = 1:N_pann2
     R_j=L2G_2((2*j-1:2*j),:);
@@ -421,7 +407,7 @@ for j = 1:N_pann2
     c12=c12-dot(Uv_j_ri,tangent_versor1(N_pann1,:));
 end
 
-%% build C21 and c21 (da qui)
+%% Costruisco C21 e c21
 % Induzione profilo 1 su profilo 2
 for j = 1:N_pann1
     R_j=L2G_1((2*j-1:2*j),:);
@@ -579,16 +565,16 @@ for i=1:N_pann2
 end
 
 %% Calcolo Cl sui 2 profili: adimensionalizzo con la corda maggiore tra le due
-Chord=max(Chord);
 Cl1=0;
 for i=1:N_pann1
-    Cl1=Cl1-dot(((1/Chord)*Cp1(i,1)*lungh_vect1(i).*normal_versor1(i,:)),[0;1]);
+    Cl1=Cl1-dot(((1/Chord(1))*Cp1(i,1)*lungh_vect1(i).*normal_versor1(i,:)),[0;1]);
 end
 Cl2=0;
 for i=1:N_pann2
-    Cl2=Cl2-dot(((1/Chord)*Cp2(i,1)*lungh_vect2(i).*normal_versor2(i,:)),[0;1]);
+    Cl2=Cl2-dot(((1/Chord(2))*Cp2(i,1)*lungh_vect2(i).*normal_versor2(i,:)),[0;1]);
 end
-
+Cl1_vect(end+1)=Cl1;
+Cl2_vect(end+1)=Cl2;
 end
 
 
