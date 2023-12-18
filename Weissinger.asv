@@ -19,7 +19,7 @@ U_inf = [cos(beta) sin(beta) 0]' .* U_inf;
 % Inserire numero di corpi
 N_corpi = 2;
 
-corda_radice = [1 0.5]';
+corda_radice = [3 10]';
 diedro = [0 0]'; % inserire in gradi
 diedro = deg2rad(diedro);
 
@@ -27,11 +27,11 @@ freccia = [10 10]'; % inserire in gradi
 freccia = deg2rad(freccia);
 
 rastremazione = [1 0.5]'; 
-apertura_alare = [2 1]';
+apertura_alare = [25 80]';
 
-LE_posizione_X = [0 5]';
+LE_posizione_X = [0 50]';
 LE_posizione_Y = [0 0]';
-LE_posizione_Z = [0 1]';
+LE_posizione_Z = [10 10]';
 
 % angolo_di_rollio = [0];
 angolo_di_incidenza_aero = [10 25]'; % alpha
@@ -42,8 +42,8 @@ angolo_di_incidenza_aero = deg2rad(angolo_di_incidenza_aero); % alpha
 % angolo_di_beccheggio =deg2rad(angolo_di_beccheggio);
 
 % Discretizzazione
-discretizzazione_semiapertura_alare = [5 5]'; % numero panelli direzione apertura su SEMIALA
-discretizzazione_corda = [5 5]'; 
+discretizzazione_semiapertura_alare = [10 20]'; % numero panelli direzione apertura su SEMIALA
+discretizzazione_corda = [5 10]'; 
 
 % Inizializzazione sistema lineare
 num_tot_pann = 0;
