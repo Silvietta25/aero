@@ -1,8 +1,16 @@
+<<<<<<< HEAD
 function [ControlPoints, InducedPoints, Normals, InfiniteVortices, Vortices, internalMesh, WingExtremes2Export,LEPoints,TEPoints] = createStructure(config, iCorpo)
 
 YAngle = config.RotationAngle_Y(iCorpo); % angolo di incidenza?
 YRot = [ cosd(YAngle)     0        sind(YAngle);
               0           1            0;
+=======
+function [ControlPoints, InducedPoints, Normals, InfiniteVortices, Vortices, internalMesh, WingExtremes2Export] = createStructure(config, iCorpo)
+
+YAngle = config.RotationAngle_Y(iCorpo);
+YRot = [ cosd(YAngle)     0        sind(YAngle);
+              0           1            0
+>>>>>>> mattia
         -sind(YAngle)     0        cosd(YAngle)];
     
 XAngle = config.DihedralAngle(iCorpo);
@@ -10,6 +18,7 @@ XRot = [ 1         0              0      ;
          0    cosd(XAngle)  -sind(XAngle);
          0    sind(XAngle)   cosd(XAngle) ];
 
+<<<<<<< HEAD
 WingExtremes.RootLE = [0 0 0]; % posizione leading edge
 % Posizione trailing edge (calettamento ala in radice)
 WingExtremes.RootTE = WingExtremes.RootLE + (YRot*[config.RootChord(iCorpo) 0 0]')';
@@ -19,24 +28,42 @@ WingExtremes.TipLE = [0 config.SemiSpan(iCorpo) 0];
 % Adding Sweep angle (modifico coord x del leading edge della tip)
 WingExtremes.TipLE(1) = WingExtremes.RootLE(1) + config.RootChord(iCorpo)/4 + config.SemiSpan(iCorpo) * tand(config.SweepAngle(iCorpo)) - config.TipChord(iCorpo)/4;
 % modifico coord x di LE della tip per dare angolo di freccia
+=======
+WingExtremes.RootLE = [0 0 0];
+WingExtremes.RootTE = WingExtremes.RootLE + (YRot*[config.RootChord(iCorpo) 0 0]')';
+% WingExtremes.TipLE = [0 config.SemiSpan(iCorpo)*cosd(config.DihedralAngle(iCorpo)) 0];
+WingExtremes.TipLE = [0 config.SemiSpan(iCorpo) 0];
+% Adding Sweep angle
+WingExtremes.TipLE(1) = WingExtremes.RootLE(1) + config.RootChord(iCorpo)/4 + config.SemiSpan(iCorpo) * tand(config.SweepAngle(iCorpo)) - config.TipChord(iCorpo)/4;
+>>>>>>> mattia
 
 % Adding Dihedral angle
 WingExtremes.TipLE = (XRot*WingExtremes.TipLE')';
 
 
 % Add Y-axis rotation
+<<<<<<< HEAD
 WingExtremes.TipLE = (YRot*WingExtremes.TipLE')'; % sistemo posizione del LE
 % della tip
 
 WingExtremes.TipTE = WingExtremes.TipLE +  (YRot*[config.TipChord(iCorpo) 0 0]')';
 % do calettamento al TE della tip
+=======
+WingExtremes.TipLE = (YRot*WingExtremes.TipLE')';
+
+
+WingExtremes.TipTE = WingExtremes.TipLE +  (YRot*[config.TipChord(iCorpo) 0 0]')';
+>>>>>>> mattia
 
 WingExtremes.RootLE = WingExtremes.RootLE + [config.LEPosition_X(iCorpo) config.LEPosition_Y(iCorpo) config.LEPosition_Z(iCorpo)];
 WingExtremes.RootTE = WingExtremes.RootTE + [config.LEPosition_X(iCorpo) config.LEPosition_Y(iCorpo) config.LEPosition_Z(iCorpo)];
 WingExtremes.TipLE = WingExtremes.TipLE + [config.LEPosition_X(iCorpo) config.LEPosition_Y(iCorpo) config.LEPosition_Z(iCorpo)];
 WingExtremes.TipTE = WingExtremes.TipTE + [config.LEPosition_X(iCorpo) config.LEPosition_Y(iCorpo) config.LEPosition_Z(iCorpo)];
+<<<<<<< HEAD
 % sommo l'origine dell'ala agli estremi definiti (utile sommare l'origine
 % per creare i piani di coda)
+=======
+>>>>>>> mattia
 
 Extremes = [WingExtremes.RootLE; WingExtremes.RootTE; WingExtremes.TipTE; WingExtremes.TipLE; WingExtremes.RootLE];
 
