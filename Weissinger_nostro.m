@@ -570,6 +570,7 @@ Perturbaz_Alpha_velivolo=1;
 [M_CG_tot,Cm_CG_tot]=momentobeccheggio(config,...
     angolo_di_incidenza_aero(1),angolo_di_incidenza_aero(2),Perturbaz_Alpha_velivolo,U_inf,rho);
 
+
 %% Grafico Cm_CG_alpha
 alpha_vect=-3:0.4:3;
 Cm_CG_vect=[];

@@ -305,3 +305,4 @@ M_CG_coda=-L_3D_Corpo2*((CA_coda(1)));
 M_CG_tot=M_CG_ala+M_CG_coda;
 % Adimensionalizziamo con grandezze ala
 Cm_CG_tot=M_CG_tot/(0.5*rho*(norm(U_Inf)^2)*(c_media1^2)*config.SemiSpan(1)*2);
+
