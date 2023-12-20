@@ -4,6 +4,14 @@ clear
 close all
 clc
 
+
+%% Dati velivolo
+BSFC=7.126*1e-7; % lo voglio in [1/s]--> scegliere valore corretto
+eta_p=0.9; % rendimento elica
+Endurance_target=5*3600; % endurance voluta in [s]
+W=10907.4; % peso velivolo in [N]
+
+
 %% Dati iniziali
 
 % velocità asintotica
@@ -527,14 +535,6 @@ for a = 1:(length(alpha_pert) + 1)
         end
     end
 
-
-    %% Dati velivolo
-    BSFC=7.126*1e-7; % lo voglio in [1/s]--> scegliere valore corretto
-    eta_p=0.9; % rendimento elica
-    Endurance_target=5*3600; % endurance voluta in [s]
-    W=10907.4; % peso velivolo in [N]
-
-
     %% Calcolo Cl totale e Cd totale
     L_tot = sum(cell2mat(L_3D(1,:)));
     CL_tot=L_tot/(0.5*rho*(norm(U_inf)^2*superficie_alare(1)));
@@ -586,9 +586,14 @@ Range_km=Range/1000;
 U_2=sqrt(W_2/(0.5*rho*superficie_alare(1)*CL_tot));
 
 
-%% Grafico Cm_CG_alpha
+%% Grafico Cm_CG/alpha
 figure
-plot(alpha_pert, Cm_CG_tot_vect, 'Linewidth', 2, 'Color', 'r')
+plot(alpha_pert, Cm_CG_tot_vect, 'Linewidth', 5, 'Color', 'r')
+title('C_{m_{CG}} vs \alpha_{perturbazione}', 'FontSize', 40)
+xlabel('\alpha_{perturbazione}', 'FontSize', 35)
+ylabel('C_{m_{CG}}', 'FontSize', 35)
+ax = gca;
+ax.FontSize = 35;
 grid on
 
 

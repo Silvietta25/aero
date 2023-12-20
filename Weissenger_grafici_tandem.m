@@ -1,8 +1,15 @@
-%% CODICE WEISSINGER CESSNA 172
+%% CODICE WEISSINGER CESSNA 172 GRAFICI COEFFICIENTI AERODINAMICI
 
 clear
 close all
 clc
+
+%% Dati velivolo
+BSFC=7.126*1e-7; % lo voglio in [1/s]--> scegliere valore corretto
+eta_p=0.9; % rendimento elica
+Endurance_target=5*3600; % endurance voluta in [s]
+W=10907.4; % peso velivolo in [N]
+
 
 %% Dati iniziali
 
@@ -38,8 +45,8 @@ LE_posizione_Y = [0 0]';
 LE_posizione_Z = [0.5 0]';
 
 % angolo_di_rollio = [0];
-alpha1_vect = 4:2:10;
-alpha2_vect = 20:2.5:25;
+alpha1_vect = [7.42, 0:1:10];
+alpha2_vect = [-1.55, 0:-1:-5];
 % angolo_di_beccheggio = [0];
 
 % Discretizzazione pannellizzazione
@@ -52,11 +59,14 @@ for i = 1:N_corpi
     num_tot_pann = num_tot_pann + 2*discretizzazione_corda(i)*discretizzazione_semiapertura_alare(i);
 end
 
-
-Cl1=zeros(length(alpha1_vect),length(alpha2_vect));
-Cl2=zeros(length(alpha1_vect),length(alpha2_vect));
-Cd1=zeros(length(alpha1_vect),length(alpha2_vect));
-Cd2=zeros(length(alpha1_vect),length(alpha2_vect));
+CL1=zeros(length(alpha1_vect),length(alpha2_vect));
+CL2=zeros(length(alpha1_vect),length(alpha2_vect));
+CD1=zeros(length(alpha1_vect),length(alpha2_vect));
+CD2=zeros(length(alpha1_vect),length(alpha2_vect));
+CL_tot_vect_1=zeros(length(alpha1_vect),length(alpha2_vect));
+CL_trim_1=zeros(length(alpha1_vect),length(alpha2_vect));
+CL_tot_vect_2=zeros(length(alpha1_vect),length(alpha2_vect));
+CL_trim_2=zeros(length(alpha1_vect),length(alpha2_vect));
 
 
 for a = 1:length(alpha1_vect)
@@ -506,11 +516,17 @@ for a = 1:length(alpha1_vect)
         CD_tot=D_tot/(0.5*rho*(norm(U_inf)^2*superficie_alare(1)));
 
 
-        Cl1(a,z)=cL_3D{1, 1};
-        Cl2(a,z)=cL_3D{1, 2};
-        Cd1(a,z)=cD_3D{1, 1};
-        Cd2(a,z)=cD_3D{1, 2};
+        CL1(a,z)=cL_3D{1, 1};
+        CL2(a,z)=cL_3D{1, 2};
+        CD1(a,z)=cD_3D{1, 1};
+        CD2(a,z)=cD_3D{1, 2};
+
+        CL_tot_vect_1(a,z)=CL_tot;
+        CL_trim_1(a,z)=2*W/(rho*norm(U_inf)^2*superficie_alare(1));
+        CL_tot_vect_2(a,z)=CL_tot;
+        CL_trim_2(a,z)=2*W/(rho*norm(U_inf)^2*superficie_alare(1));
     end
+
 end
 
 %% Grafico con alpha1 variabile e alpha2 fisso ad esempio
@@ -518,32 +534,70 @@ end
 % voluto (esempio: prendo la prima colonna, cioè alpha2=2)--> ho il grafico
 % di Cl e Cd in funzione di ALPHA1_vect, con ALPHA2 fissato
 figure
-plot(alpha1_vect,Cl1(:,1)','LineWidth',2)
+plot(alpha1_vect,CL1(:,1)','LineWidth',5)
 hold on
-plot(alpha1_vect,Cl2(:,1)','LineWidth',2)
+plot(alpha1_vect,CL2(:,1)','LineWidth',5)
 hold on
-plot(alpha1_vect,Cd1(:,1)','LineWidth',2)
+plot(alpha1_vect,CD1(:,1)','LineWidth',5)
 hold on
-plot(alpha1_vect,Cd2(:,1)','LineWidth',2)
-legend('Cl1','Cl2','Cd1','Cd2')
+plot(alpha1_vect,CD2(:,1)','LineWidth',5)
+legend('C_{L_1}','C_{L_2}','C_{D_1}','C_{D_2}')
 grid on
-title('Coefficienti aerodinamici Weissinger tandem con \alpha_2 fissato')
+xlabel('\alpha_1', 'FontSize', 35)
+ylabel('Coeff aerodinamici', 'FontSize', 35)
+ax = gca;
+ax.FontSize = 35;
+title('Coefficienti aerodinamici con \alpha_2 fissato', 'FontSize', 40)
 
 %% Grafico con alpha2 variabile e alpha1 fisso ad esempio
 % Rappresento, in pratica, una riga di Cl corrispondente all'alpha1
 % voluto (esempio: prendo la prima riga, cioè alpha1=4)--> ho il grafico
 % di Cl e Cd in funzione di ALPHA2_vect, con ALPHA1 fissato
 figure
-plot(alpha2_vect,Cl1(1,:)','LineWidth',2)
+plot(alpha2_vect,CL1(1,:)','LineWidth',5)
 hold on
-plot(alpha2_vect,Cl2(1,:)','LineWidth',2)
+plot(alpha2_vect,CL2(1,:)','LineWidth',5)
 hold on
-plot(alpha2_vect,Cd1(1,:)','LineWidth',2)
+plot(alpha2_vect,CD1(1,:)','LineWidth',5)
 hold on
-plot(alpha2_vect,Cd2(1,:)','LineWidth',2)
-legend('Cl1','Cl2','Cd1','Cd2')
+plot(alpha2_vect,CD2(1,:)','LineWidth',5)
+legend('C_{L_1}','C_{L_2}','C_{D_1}','C_{D_2}')
 grid on
-title('Coefficienti aerodinamici Weissinger tandem con \alpha_1 fissato')
+xlabel('\alpha_2', 'FontSize', 35)
+ylabel('Coeff aerodinamici', 'FontSize', 35)
+ax = gca;
+ax.FontSize = 35;
+title('Coefficienti aerodinamici con \alpha_1 fissato', 'FontSize', 40)
 
 
+%% Grafico alpha1 trim
+figure
+plot(alpha1_vect, CL_trim_1(:,1), 'lineStyle', '--', 'LineWidth',5)
+hold on
+plot(alpha1_vect, CL_tot_vect_1(:,1), 'LineWidth',5)
+xline(7.42, 'lineStyle', '-.','LineWidth',5)
+plot(7.42, CL_trim_1(1,1), '.', 'MarkerSize', 50, 'Color', 'k')
+legend('C_{L_{trim}}','C_{L_{tot}}', '\alpha_{1_{trim}}')
+xlabel('\alpha_1', 'FontSize', 35)
+ylabel('C_{L_{tot}}', 'FontSize', 35)
+ax = gca;
+ax.FontSize = 35;
+title('\alpha_1 di trim', 'FontSize', 40)
+grid on
+
+
+%% Grafico alpha2 trim
+figure
+plot(alpha2_vect, CL_trim_2(1,:), 'LineWidth',5)
+hold on
+plot(alpha2_vect, CL_tot_vect_2(1,:), 'LineWidth',5)
+xline(-1.65, 'lineStyle', '-.','LineWidth',5)
+plot(-1.65, CL_trim_1(1,1), '.', 'MarkerSize', 50, 'Color', 'k')
+xlabel('\alpha_2', 'FontSize', 35)
+ylabel('C_{L_{tot}}', 'FontSize', 35)
+legend('C_{L_{trim}}','C_{L_{tot}}', '\alpha_{2_{trim}}')
+ax = gca;
+ax.FontSize = 35;
+title('\alpha_2 di trim', 'FontSize', 40)
+grid on
 
