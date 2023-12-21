@@ -589,11 +589,11 @@ U_2=sqrt(W_2/(0.5*rho*superficie_alare(1)*CL_tot));
 %% Grafico Cm_CG/alpha
 figure
 plot(alpha_pert, Cm_CG_tot_vect, 'Linewidth', 5, 'Color', 'r')
-title('C_{m_{CG}} vs \alpha_{perturbazione}', 'FontSize', 40)
-xlabel('\alpha_{perturbazione}', 'FontSize', 35)
-ylabel('C_{m_{CG}}', 'FontSize', 35)
+title('C_{m_{CG}} vs \alpha_{perturbazione}', 'FontSize', 50)
+xlabel('\alpha_{perturbazione}', 'FontSize', 40)
+ylabel('C_{m_{CG}}', 'FontSize', 40)
 ax = gca;
-ax.FontSize = 35;
+ax.FontSize = 40;
 grid on
 
 

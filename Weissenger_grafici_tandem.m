@@ -543,11 +543,11 @@ hold on
 plot(alpha1_vect,CD2(:,1)','LineWidth',5)
 legend('C_{L_1}','C_{L_2}','C_{D_1}','C_{D_2}')
 grid on
-xlabel('\alpha_1', 'FontSize', 35)
-ylabel('Coeff aerodinamici', 'FontSize', 35)
+xlabel('\alpha_1', 'FontSize', 40)
+ylabel('Coeff aerodinamici', 'FontSize', 40)
 ax = gca;
-ax.FontSize = 35;
-title('Coefficienti aerodinamici con \alpha_2 fissato', 'FontSize', 40)
+ax.FontSize = 40;
+title('Coefficienti aerodinamici con \alpha_2 fissato', 'FontSize', 50)
 
 %% Grafico con alpha2 variabile e alpha1 fisso ad esempio
 % Rappresento, in pratica, una riga di Cl corrispondente all'alpha1
@@ -563,11 +563,11 @@ hold on
 plot(alpha2_vect,CD2(1,:)','LineWidth',5)
 legend('C_{L_1}','C_{L_2}','C_{D_1}','C_{D_2}')
 grid on
-xlabel('\alpha_2', 'FontSize', 35)
-ylabel('Coeff aerodinamici', 'FontSize', 35)
+xlabel('\alpha_2', 'FontSize', 40)
+ylabel('Coeff aerodinamici', 'FontSize', 40)
 ax = gca;
-ax.FontSize = 35;
-title('Coefficienti aerodinamici con \alpha_1 fissato', 'FontSize', 40)
+ax.FontSize = 40;
+title('Coefficienti aerodinamici con \alpha_1 fissato', 'FontSize', 50)
 
 
 %% Grafico alpha1 trim
@@ -578,11 +578,11 @@ plot(alpha1_vect, CL_tot_vect_1(:,1), 'LineWidth',5)
 xline(7.42, 'lineStyle', '-.','LineWidth',5)
 plot(7.42, CL_trim_1(1,1), '.', 'MarkerSize', 50, 'Color', 'k')
 legend('C_{L_{trim}}','C_{L_{tot}}', '\alpha_{1_{trim}}')
-xlabel('\alpha_1', 'FontSize', 35)
-ylabel('C_{L_{tot}}', 'FontSize', 35)
+xlabel('\alpha_1', 'FontSize', 40)
+ylabel('C_{L_{tot}}', 'FontSize', 40)
 ax = gca;
-ax.FontSize = 35;
-title('\alpha_1 di trim', 'FontSize', 40)
+ax.FontSize = 40;
+title('\alpha_1 di trim', 'FontSize', 50)
 grid on
 
 
@@ -593,11 +593,11 @@ hold on
 plot(alpha2_vect, CL_tot_vect_2(1,:), 'LineWidth',5)
 xline(-1.65, 'lineStyle', '-.','LineWidth',5)
 plot(-1.65, CL_trim_1(1,1), '.', 'MarkerSize', 50, 'Color', 'k')
-xlabel('\alpha_2', 'FontSize', 35)
-ylabel('C_{L_{tot}}', 'FontSize', 35)
-legend('C_{L_{trim}}','C_{L_{tot}}', '\alpha_{2_{trim}}')
+xlabel('\alpha_2', 'FontSize', 40)
+ylabel('C_{L_{tot}}', 'FontSize', 40)
+legend('C_{L_{trim}}','C_{L_{tot}}', '\alpha_{2_{trim}}', 'FontSize', 50)
 ax = gca;
-ax.FontSize = 35;
-title('\alpha_2 di trim', 'FontSize', 40)
+ax.FontSize = 40;
+title('\alpha_2 di trim', 'FontSize', 50)
 grid on
 
