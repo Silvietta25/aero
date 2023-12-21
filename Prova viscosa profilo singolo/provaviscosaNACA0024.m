@@ -1,6 +1,8 @@
-clear
-clc
 %% Grafico Cl(alpha) NACA 0024 simulazione viscosa
+clear
+close all
+clc
+
 % Si riportano i dati da XFoil
 alpha=[0:0.5:11,12:0.5:25];
 Cl= [0 0.0498 0.0990 0.1486 0.1978 0.2467 0.2956 0.3432 0.3913 0.4378 0.4842...
@@ -12,9 +14,9 @@ plot(alpha, Cl, 'LineWidth',5,'Color','b')
 hold on
 plot(alpha,Cl(11)/alpha(11).*alpha,'LineWidth',5,'LineStyle','--','Color','r')
 grid on
-legend('Simulazione viscosa','Modello lineare','FontSize',20)
-xlabel('alpha','FontSize',35)
-ylabel('C_L','FontSize',35)
+legend('Simulazione viscosa','Modello lineare','FontSize',40)
+xlabel('alpha','FontSize',40)
+ylabel('C_L','FontSize',40)
 ax=gca;
-ax.FontSize=35;
-title('C_L(\alpha) NACA 0024 con simulazione viscosa XFoil','FontSize',40)
+ax.FontSize=40;
+title('C_L(\alpha) NACA 0024 con simulazione viscosa XFoil','FontSize',50)

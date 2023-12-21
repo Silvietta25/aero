@@ -1,3 +1,4 @@
+%% Grafico tandem Hess-Smith
 clear all
 close all
 addpath mat_functions
@@ -392,13 +393,13 @@ plot(alpha2_vect*180/pi,Cl_tot_vect,'LineWidth',5,'Color','b')
 hold on
 yline(0.6602,'LineWidth',5,'Color','g','LineStyle','--')
 grid on
-legend('Cl tandem','Cl senza tandem','FontSize',20)
-xlabel('\alpha coda','FontSize',35)
-ylabel('C_L','FontSize',35)
+legend('Cl tandem','Cl senza tandem','FontSize',40)
+xlabel('\alpha coda','FontSize',40)
+ylabel('C_L','FontSize',40)
 xlim([5 12])
 ylim([0 3.5])
 ax=gca;
-ax.FontSize=35;
-title('Cl profilo davanti al variare di incidenza della coda','FontSize',40)
+ax.FontSize=40;
+title('Cl profilo anteriore al variare di incidenza del profilo posteriore','FontSize',50)
 
 

@@ -233,15 +233,15 @@ polareNaca0012 = importfile('polareNaca0012');
 plot(polareNaca0012(1:13,1),polareNaca0012(1:13,2),'LineWidth',5,'Color','r','LineStyle','-')
 hold on
 plot(alpha_vect,Cl_vect,'Linewidth',5,'Color','g')
-title('Confronto tra i grafici del Cl(\alpha)','FontSize',40)
+title('Confronto tra i grafici del Cl(\alpha)','FontSize',50)
 grid on
-legend('XFoil','Hess Smith','Fontsize',20)
+legend('XFoil','Hess Smith','Fontsize',40)
 ax=gca;
-ax.FontSize=35;
+ax.FontSize=40;
 xlim([0 6])
 hold off
-xlabel('alpha','FontSize',35)
-ylabel('C_L','FontSize',35)
+xlabel('alpha','FontSize',40)
+ylabel('C_L','FontSize',40)
 
 %% Errore relativo massimo tra il Cl di Hess Smith e quello di XFoil
 err_rel_max_Cl=max(abs(Cl_vect-polareNaca0012(1:13,2)')./polareNaca0012(1:13,2)')*100;

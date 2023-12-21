@@ -222,13 +222,13 @@ hold on
 plot(centre_vect((1:(N_pann+1)/2),1),-CpXFoil((1:(N_pann+1)/2),2),'LineWidth',5)
 hold on
 plot(centre_vect((N_pann+1)/2:end,1),-CpXFoil((N_pann+1)/2:end-1,2),'LineWidth',5)
-legend('-Cp ventre Hess Smith','-Cp dorso Hess Smith','-Cp ventre XFoil','-Cp ventre XFoil','Fontsize',20)
+legend('-Cp ventre Hess Smith','-Cp dorso Hess Smith','-Cp ventre XFoil','-Cp ventre XFoil','Fontsize',40)
 grid on
-title('Confronto tra i grafici del -Cp','FontSize',40)
+title('Confronto tra i grafici del -Cp','FontSize',50)
 xlim([0 1])
 ax=gca;
-ax.FontSize=35;
-xlabel('x/c','FontSize',35)
-ylabel('C_P','FontSize',35)
+ax.FontSize=40;
+xlabel('x/c','FontSize',40)
+ylabel('C_P','FontSize',40)
 hold off
 
