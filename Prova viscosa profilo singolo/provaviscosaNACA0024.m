@@ -15,7 +15,7 @@ hold on
 plot(alpha,Cl(11)/alpha(11).*alpha,'LineWidth',5,'LineStyle','--','Color','r')
 grid on
 legend('Simulazione viscosa','Modello lineare','FontSize',40)
-xlabel('alpha','FontSize',40)
+xlabel('\alpha','FontSize',40)
 ylabel('C_L','FontSize',40)
 ax=gca;
 ax.FontSize=40;
