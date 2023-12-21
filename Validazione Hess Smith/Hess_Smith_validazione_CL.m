@@ -240,7 +240,7 @@ ax=gca;
 ax.FontSize=40;
 xlim([0 6])
 hold off
-xlabel('alpha','FontSize',40)
+xlabel('\alpha','FontSize',40)
 ylabel('C_L','FontSize',40)
 
 %% Errore relativo massimo tra il Cl di Hess Smith e quello di XFoil
